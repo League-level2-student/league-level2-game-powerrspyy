@@ -10,34 +10,90 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
-	
+	Font titleFont;
+	Timer frameDraw;
+	Font textFont;
+	Player player;
+	ArrayList<Platform>platforms = new ArrayList<>();	
 	public GamePanel() {
-		System.out.println(Main.width + " " + Main.height);
+		platforms.add(new Platform(10,10,50,50));
+		titleFont = new Font("Arial", Font.PLAIN, 48);
+		textFont = new Font("Arial", Font.PLAIN, 24);
+		frameDraw = new Timer(1000 / 60, this);
+		player = new Player(Main.width/2-25, Main.height/2-25);
+		frameDraw.start();
+
+	}
+	
+	public void draw(Graphics g) {
+		player.draw(g);
+		for(Platform p : platforms) {
+			p.draw(g);
+		}
+
+	}
+	public void check_collisions() {
+		
+	}
+
+	
+	@Override
+	public void paintComponent(Graphics g) {
+
+		draw(g);
 	}
 
 	@Override
-	public void keyPressed(KeyEvent arg0) {
+	public void keyPressed(KeyEvent e) {
+		
+		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+				player.movingLeft = true;
+		
+		}
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+				player.movingRight = true;
+			
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+				player.movingLeft = false;
+			
+		}
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+				player.movingRight = false;
+			
+		}		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+	public void actionPerformed(ActionEvent e) {
+		Player.lastcamx = Player.camx;
+		Player.lastcamy = Player.camy;
 		
+		update();
+		
+		check_collisions();
+		repaint();
 	}
 
-	@Override
-	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
+	public void update() {
+		for(Platform p: platforms) {
+			p.update();
+		}
+		player.update();
 		
 	}
 }
