@@ -2,8 +2,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public class Player {
-	final int x;
-	final int y;
+	 int x;
+	 int y;
 	static float camx;
 	static float camy;
 	static float lastcamx;
@@ -14,7 +14,7 @@ public class Player {
 	Rectangle collider;
 	public static int vy = 0;	// Y velocity
 	public static int vx = 0;	// X velocity
-	int gravity = 1;
+	final int gravity = 1;
 
 	public Player(int xf, int yf) {
 		x = xf;
@@ -25,7 +25,7 @@ public class Player {
 		
 	}
 	public void draw(Graphics g) {
-		g.drawRect(x, y, size, size);
+		g.drawRect(Main.width / 2 - 25, Main.height / 2 - 25, size, size);
 	}
 	public void update() {
 		if (movingLeft == true) {
@@ -34,9 +34,12 @@ public class Player {
 		if (movingRight == true) {
 			camx+=10;
 		}
-		camx += vx;
-		camy += vy;
-		vy += 1;
+		camx+=vx;
+		camy+=vy;
+		x += vx;
+		y += vy;
+		vy += gravity;
+		collider.setBounds(x,y,size,size);
 	}
 	
 	

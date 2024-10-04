@@ -15,9 +15,14 @@ public class Platform {
 		collider = new Rectangle(x,y,w,h);
 	}
 	public void update() {
-		collider.setBounds(Math.round(x - Player.camx), Math.round(y-Player.camy), w, h);
+		collider.setBounds(x, y, w, h);
 	}
 	public void draw(Graphics g) {
-		g.drawRect(Math.round(x - Player.camx), Math.round(y-Player.camy), w, h);
+//		g.drawRect(Math.round(x - Player.camx), Math.round(y-Player.camy), w, h);
+		g.drawRect(x, (int)(Main.width / 2 - 25+(y-Player.camy)), w, h);
 	}
 }
+
+
+//g.fillRect(x, Main.width / 2 - 25+(y-Player.camy), width, height);
+//Main.width / 2 - 25

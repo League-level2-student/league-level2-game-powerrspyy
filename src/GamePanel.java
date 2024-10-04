@@ -20,7 +20,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	ArrayList<Platform> platforms = new ArrayList<>();
 
 	public GamePanel() {
-		platforms.add(new Platform(10, 10, 50, 50));
+		//platforms.add(new Platform(10, 10, 50, 50));
 		platforms.add(new Platform(700, 1000, 500, 100));
 		titleFont = new Font("Arial", Font.PLAIN, 48);
 		textFont = new Font("Arial", Font.PLAIN, 24);
@@ -41,6 +41,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	public void check_collisions() {
 		for (Platform p : platforms) {
 			if (player.collider.intersects(p.collider)) {
+				System.out.println("HELLO");
 				int dy = Math.round(p.y - Player.camy); // Drawn y
 				int dx = Math.round(p.x - Player.camx); // Drawn x
 				if (player.y + player.size < dy && Player.vy > 0 && player.x + player.size > dx
