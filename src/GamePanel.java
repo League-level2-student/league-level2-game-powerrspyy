@@ -20,8 +20,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	ArrayList<Platform> platforms = new ArrayList<>();
 
 	public GamePanel() {
-		//platforms.add(new Platform(10, 10, 50, 50));
-		platforms.add(new Platform(700, 1000, 500, 100));
+		platforms.add(new Platform(10, 10, 50, 50));
+		platforms.add(new Platform(700, 700, 500, 100));
 		titleFont = new Font("Arial", Font.PLAIN, 48);
 		textFont = new Font("Arial", Font.PLAIN, 24);
 		frameDraw = new Timer(1000 / 60, this);
@@ -44,12 +44,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 				System.out.println("HELLO");
 				int dy = Math.round(p.y - Player.camy); // Drawn y
 				int dx = Math.round(p.x - Player.camx); // Drawn x
-				if (player.y + player.size < dy && Player.vy > 0 && player.x + player.size > dx
-						&& player.x > dx + p.w) {
+				if (player.y + player.size > dy && Player.vy > 0 && player.x + player.size > dx
+						&& player.x <= dx + p.w) {
 					Player.vy = 0;
 					System.out.println("Collision Detected!");
-					Player.camx = Player.lastcamx;
+//					Player.camx = Player.lastcamx;
 					Player.camy = Player.lastcamy;
+//					player.y = dy-player.size;
 				}
 			}
 		}
@@ -67,11 +68,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			player.movingLeft = true;
+			
 
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 			player.movingRight = true;
 
+		}
+		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+			Player.vy = -12;
 		}
 
 	}
