@@ -14,7 +14,7 @@ public class Player {
 	Rectangle collider;
 	public static float vy = 0;	// Y velocity
 	public static float vx = 0;	// X velocity
-	float gravity = 0.5f;
+	float gravity = 0.1f;
 	final float max_xvel = 15.0f;
 	float xvel_increment = 5.0f;
 	final float min_f_cor = 0.3f; // Minimum friction value before it sets it to 0

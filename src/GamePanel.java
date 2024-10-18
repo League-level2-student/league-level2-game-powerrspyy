@@ -21,10 +21,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	public GamePanel() {
 		platforms.add(new Platform(10, 10, 50, 50));
-		platforms.add(new Platform(700, 700, 500, 100));
+		platforms.add(new Platform(700, 700, 500, 300));
 		titleFont = new Font("Arial", Font.PLAIN, 48);
 		textFont = new Font("Arial", Font.PLAIN, 24);
-		frameDraw = new Timer(1000 / 60, this);
+		frameDraw = new Timer(1000 / 200, this);
 		player = new Player(Main.width / 2 - 25, Main.height / 2 - 25);
 		frameDraw.start();
 
@@ -42,16 +42,50 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		for (Platform p : platforms) {
 			if (player.collider.intersects(p.collider)) {
 				System.out.println("HELLO");
+				int m = 20;
 				int dy = Math.round(p.y - Player.camy); // Drawn y
 				int dx = Math.round(p.x - Player.camx); // Drawn x
-				if (player.y + player.size > dy && Player.vy > 0 && player.x + player.size > dx
-						&& player.x <= dx + p.w) {
-					Player.vy = 0;
-					System.out.println("Collision Detected!");
-//					Player.camx = Player.lastcamx;
-					Player.camy = Player.lastcamy;
-//					player.y = dy-player.size;
+//				if (player.y + player.size > dy && Player.vy > 0 && player.x + player.size > dx
+//						&& player.x <= dx + p.w) {
+//					Player.vy = 0;
+//					
+//					System.out.println("Collision Detected!");
+////					Player.camx = Player.lastcamx;
+//					Player.camy = p.y-(player.y+player.size);
+//					System.out.println("hi");
+////					player.y = dy-player.size;
+//				}
+				
+	// X_COLLISIONS
+				if(player.x + m > dy + p.w ) {
+					// Right collision
 				}
+				else if(player.x + player.size - m < dy) {
+					// Left collision
+				}
+				
+				
+				
+				
+				
+	// Y_COLLISIONS
+				if(player.y+m > dy+p.h) {
+					// Bottom collision
+					Player.vy = 0;
+					Player.camy = p.y-(player.y+player.size) + p.h + player.size;
+					 
+				}
+				else if(player.y + player.size - m < dy) {
+					// Top collision
+					Player.vy = 0;
+					Player.camy = p.y-(player.y+player.size);
+
+				}
+				
+				
+				
+				
+				
 			}
 		}
 
@@ -59,7 +93,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void paintComponent(Graphics g) {
-
+		g.drawLine(0, player.y + player.size - 20, 1000, player.y + player.size - 20);
 		draw(g);
 	}
 
@@ -76,7 +110,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 		}
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-			Player.vy = -12;
+			Player.vy = -5;
 		}
 
 	}
