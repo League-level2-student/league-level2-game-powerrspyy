@@ -14,19 +14,44 @@ import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	Font titleFont;
+	public boolean grounded_check;
 	Timer frameDraw;
 	Font textFont;
 	Player player;
+	public static boolean Grounded = false;
 	ArrayList<Platform> platforms = new ArrayList<>();
+	Thread updateLoop = new Thread(() -> {
+		while (true) {
+			Player.lastcamx = Player.camx;
+			Player.lastcamy = Player.camy;
+
+			check_collisions();
+//			System.out.println(Player.camx + " " + Player.camy);
+			if (Player.camy > 10000) {
+				restart();
+			}
+
+		}
+	});
 
 	public GamePanel() {
 		platforms.add(new Platform(10, 10, 50, 50));
 		platforms.add(new Platform(700, 700, 500, 300));
+		platforms.add(new Platform(1400, 600, 200, 20));
+		platforms.add(new Platform(1395, 400, 210, 20));
+		
 		titleFont = new Font("Arial", Font.PLAIN, 48);
 		textFont = new Font("Arial", Font.PLAIN, 24);
-		frameDraw = new Timer(1000 / 200, this);
+		frameDraw = new Timer(1000 / 60, this);
 		player = new Player(Main.width / 2 - 25, Main.height / 2 - 25);
 		frameDraw.start();
+		updateLoop.start();
+
+	}
+
+	public void restart() {
+		Player.camy = 0;
+		Player.camx = 0;
 
 	}
 
@@ -39,10 +64,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	}
 
 	public void check_collisions() {
+		grounded_check = false;
+
 		for (Platform p : platforms) {
 			if (player.collider.intersects(p.collider)) {
-				System.out.println("HELLO");
 				int m = 20;
+				
 				int dy = Math.round(p.y - Player.camy); // Drawn y
 				int dx = Math.round(p.x - Player.camx); // Drawn x
 //				if (player.y + player.size > dy && Player.vy > 0 && player.x + player.size > dx
@@ -55,45 +82,47 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 //					System.out.println("hi");
 ////					player.y = dy-player.size;
 //				}
-				
-	// X_COLLISIONS
-				if(player.x + m > dy + p.w ) {
+
+				// X_COLLISIONS
+				if (player.x + m > dx + p.w) {
 					// Right collision
-				}
-				else if(player.x + player.size - m < dy) {
+					Player.vx = 0;
+					Player.camx = p.x - (player.x + player.size) + p.w + player.size;
+				} else if (player.x + player.size - m < dx) {
 					// Left collision
+					Player.vx = 0;
+					Player.camx = p.x - (player.x + player.size);
 				}
-				
-				
-				
-				
-				
-	// Y_COLLISIONS
-				if(player.y+m > dy+p.h) {
+
+				// Y_COLLISIONS
+				if (player.y + m > dy + p.h) {
 					// Bottom collision
 					Player.vy = 0;
-					Player.camy = p.y-(player.y+player.size) + p.h + player.size;
-					 
-				}
-				else if(player.y + player.size - m < dy) {
+					Player.camy = p.y - (player.y + player.size) + p.h + player.size;
+
+				} else if (player.y + player.size - m < dy) {
 					// Top collision
+					if(Grounded) {
+						grounded_check = true;
+					}else{
 					Player.vy = 0;
-					Player.camy = p.y-(player.y+player.size);
+					Player.camy = p.y - (player.y + player.size)+1;
+					Grounded = true;
+					grounded_check = true;}
 
 				}
 				
-				
-				
-				
-				
+
 			}
 		}
+		if(!grounded_check) {
+			Grounded = false;}
+
 
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
-		g.drawLine(0, player.y + player.size - 20, 1000, player.y + player.size - 20);
 		draw(g);
 	}
 
@@ -102,7 +131,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			player.movingLeft = true;
-			
 
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
@@ -110,7 +138,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 		}
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-			Player.vy = -5;
+			Player.vy = -15;
+			
+			Grounded = false;
 		}
 
 	}
@@ -135,13 +165,17 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Player.lastcamx = Player.camx;
-		Player.lastcamy = Player.camy;
-
+//		Player.lastcamx = Player.camx;
+//		Player.lastcamy = Player.camy;
+//
+//		update();
+//
+//		check_collisions();
+////		System.out.println(Player.camx + " " + Player.camy);
+//		if(Player.camy > 10000) {
+//			restart();
+//		}
 		update();
-
-		check_collisions();
-//		System.out.println(Player.camx + " " + Player.camy);
 		repaint();
 	}
 
