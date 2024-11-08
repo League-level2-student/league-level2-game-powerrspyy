@@ -1,4 +1,5 @@
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 public class Player {
@@ -39,7 +40,8 @@ public class Player {
 			vx += fric;
 		}
 	}
-	public void draw(Graphics g) {
+	public void draw(Graphics graphics) {
+		Graphics2D g = (Graphics2D)graphics;
 		g.drawRect(Main.width / 2 - 25, Main.height / 2 - 25, size, size);
 	}
 	public void update() {
@@ -66,9 +68,9 @@ public class Player {
 			vy += gravity;
 
 		}
-		if(vy>15) {
-			vy = 15;
-		}
+//		if(vy>15) {
+//			vy = 15;
+//		}
 		collider.setBounds(x,y,size,size);
 	}
 

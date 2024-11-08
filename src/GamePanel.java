@@ -15,10 +15,25 @@ import java.util.ArrayList;
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	Font titleFont;
 	public boolean grounded_check;
+//	public boolean x_right_check;
+//	public boolean x_left_check;
+	public boolean y_bottom_check;
 	Timer frameDraw;
 	Font textFont;
 	Player player;
-	public static boolean Grounded = false;
+	public volatile static boolean Grounded = false;
+//	public volatile static boolean x_right = false;
+//	public volatile static boolean x_left = false;
+	public volatile static boolean y_bottom = false;
+	public boolean top;
+	public boolean bottom;
+	public boolean left;
+	public boolean right;
+	public boolean up;
+	public boolean down;
+	public boolean xleft;
+	public boolean xright;
+	public boolean x_coll = false;
 	ArrayList<Platform> platforms = new ArrayList<>();
 	Thread updateLoop = new Thread(() -> {
 		while (true) {
@@ -65,10 +80,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	public void check_collisions() {
 		grounded_check = false;
+		y_bottom_check = false;
+		
 
 		for (Platform p : platforms) {
 			if (player.collider.intersects(p.collider)) {
-				int m = 20;
+				int m = 50;
 				
 				int dy = Math.round(p.y - Player.camy); // Drawn y
 				int dx = Math.round(p.x - Player.camx); // Drawn x
@@ -82,26 +99,32 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 //					System.out.println("hi");
 ////					player.y = dy-player.size;
 //				}
-
-				// X_COLLISIONS
-				if (player.x + m > dx + p.w) {
-					// Right collision
-					Player.vx = 0;
-					Player.camx = p.x - (player.x + player.size) + p.w + player.size;
-				} else if (player.x + player.size - m < dx) {
-					// Left collision
-					Player.vx = 0;
-					Player.camx = p.x - (player.x + player.size);
-				}
-
+				// Relative to platform
+				bottom = (player.y + m > dy + p.h);
+				top = (player.y + player.size - m < dy);
+				right = (player.x + m > dx + p.w);
+				left = (player.x + player.size - m < dx);
+				// Player directions
+				up = Player.vy < 0;
+				down = Player.vy > 0;
+				xleft = Player.vx > 0;
+				xright = Player.vx <0;
 				// Y_COLLISIONS
-				if (player.y + m > dy + p.h) {
+				if (bottom && up) {
 					// Bottom collision
-					Player.vy = 0;
-					Player.camy = p.y - (player.y + player.size) + p.h + player.size;
 
-				} else if (player.y + player.size - m < dy) {
+					if(y_bottom) {
+						y_bottom_check = true;
+					}else {
+					Player.vy = 0;
+					Player.camy = p.y - (player.y + player.size) + p.h + player.size - 1;
+					y_bottom = true;
+					y_bottom_check = true;
+					}
+
+				} else if (top && down) {
 					// Top collision
+
 					if(Grounded) {
 						grounded_check = true;
 					}else{
@@ -111,12 +134,40 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 					grounded_check = true;}
 
 				}
+
+				// X_COLLISIONS
+				else if (right && xright && (up || down)) {
+					x_coll = true;
+					// Right collision
+//					if(x_right) {
+//						x_right_check = true;
+//					}else {
+					Player.vx = 0;
+					Player.camx = p.x - (player.x + player.size) + p.w + player.size;
+//					x_right = true;
+//					x_right_check = true;
+//					}
+				} else if (left && xleft && (up || down)) {
+					x_coll = true;
+					// Left collision
+//					if(x_left) {
+//						x_left_check = true;
+//					}else {
+					Player.vx = 0;
+					Player.camx = p.x - (player.x + player.size);
+//					x_left = true;
+//					x_left_check = true;
+//					}
+				}
+
 				
 
 			}
 		}
 		if(!grounded_check) {
 			Grounded = false;}
+		if(!y_bottom_check) {
+			y_bottom = false;}
 
 
 	}
@@ -138,9 +189,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 		}
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-			Player.vy = -15;
+			
 			
 			Grounded = false;
+			Player.vy = -15;
 		}
 
 	}
