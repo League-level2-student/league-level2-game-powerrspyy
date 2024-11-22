@@ -1,32 +1,33 @@
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 public class Platform {
-    public Vector2D position;
-    public int width, height;
-    public Rectangle2D collider;
-
-    public Platform(float x_int, float y_int, int width, int height) {
-        position = new Vector2D(x_int, y_int);
-        this.width = width;
-        this.height = height;
-        collider = new Rectangle2D.Float(position.x, position.y, width, height);
-    }
-
-    public void update() {
-        // Update the platform's collider based on the position
-        collider.setRect(position.x - Player.camx, position.y - Player.camy, width, height);
-    }
-
-    public void draw(Graphics graphics) {
-        Graphics2D g = (Graphics2D) graphics;
-        g.setColor(Color.GRAY);
-        g.fill(new Rectangle2D.Float(position.x - Player.camx, position.y - Player.camy, width, height));
-
-        // Optional: Draw the outline of the platform for debugging
-        g.setColor(Color.BLACK);
-        g.draw(new Rectangle2D.Float(position.x - Player.camx, position.y - Player.camy, width, height));
-    }
+	int x;
+	int y;
+	int w;
+	int h;
+	Rectangle2D collider;
+	public Platform(int x_int, int y_int, int width, int height) {
+		x = x_int;
+		y = y_int;
+		w = width;
+		h = height;
+		collider = new Rectangle2D.Float(x,y,w,h);
+	}
+	public void update() {
+		collider.setRect((x - Player.camx), (y-Player.camy), w, h);
+	}
+	public void draw(Graphics graphics) {
+		Graphics2D g = (Graphics2D)graphics;
+		g.draw(new Rectangle2D.Float((x - Player.camx), (y-Player.camy), (float)w, (float)h));
+		g.fill(new Rectangle2D.Float((x - Player.camx), (y-Player.camy), (float)w, (float)h));
+//		g.drawRect(x, (int)(Main.width / 2 - 25+(y-Player.camy)), w, h);
+//		g.drawRect(x, y, w, h);
+	}
 }
+
+
+//g.fillRect(x, Main.width / 2 - 25+(y-Player.camy), width, height);
+//Main.width / 2 - 25

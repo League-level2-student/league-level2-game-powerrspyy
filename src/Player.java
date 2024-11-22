@@ -1,95 +1,80 @@
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Color;
 import java.awt.Rectangle;
 
 public class Player {
-    public static float camx;
-	public static float camy;
-	public Vector2D position;
-    public Vector2D velocity;
-    public int size = 50;
-    public Rectangle collider;
-    public boolean movingLeft;
-    public boolean movingRight;
+	 int x;
+	 int y;
+	static float camx;
+	static float camy;
+	static float lastcamx;
+	static float lastcamy;
+	int size = 50;
+	public boolean movingLeft;
+	public boolean movingRight;
+	Rectangle collider;
+	public static float vy = 0;	// Y velocity
+	public static float vx = 0;	// X velocity
+	float gravity = 0.5f;
+	final float max_xvel = 15.0f;
+	float xvel_increment = 5.0f;
+	final float min_f_cor = 0.3f; // Minimum friction value before it sets it to 0
+	float fric = 0.6f;
 
-    private float gravity = 0.5f;
-    private final float max_xvel = 5.0f;
-    private float xvel_increment = 1.0f;
-    private final float min_friction = 0.3f;
-    private float friction = 0.6f;
+	public Player(int xf, int yf) {
+		x = xf;
+		y = yf;
+		movingLeft = false;
+		movingRight = false;
+		collider = new Rectangle(xf, yf, size, size);
+		
+	}
+	public void friction() {
+		if(vx < min_f_cor && vx > -min_f_cor) {
+			vx = 0;
+		}
+		else if(vx > 0) {
+			vx -= fric;
+		}
+		else {
+			vx += fric;
+		}
+	}
+	public void draw(Graphics graphics) {
+		Graphics2D g = (Graphics2D)graphics;
+		g.drawRect(Main.width / 2 - 25, Main.height / 2 - 25, size, size);
+	}
+	public void update() {
+		friction();
+		if (movingLeft == true) {
+			vx -= xvel_increment;
+			if(vx < -xvel_increment) {
+				vx = -xvel_increment;
+			}
+		}
+		if (movingRight == true) {
+			vx += xvel_increment;
+			if(vx > xvel_increment) {
+				vx = xvel_increment;
+			}
+		}
+		lastcamx = camx;
+		lastcamy = camy;
+		camx+=vx;
+		camy+=vy;
+//		x += vx;
+//		y += vy;
+		if(!GamePanel.Grounded) {
+			vy += gravity;
 
-    public Player(float xf, float yf) {
-        this.position = new Vector2D(xf, yf);
-        this.velocity = new Vector2D();
-        this.collider = new Rectangle((int) position.x, (int) position.y, size, size);
-    }
+		}
+//		if(vy>15) {
+//			vy = 15;
+//		}
+		collider.setBounds(x,y,size,size);
+	}
 
-    // Apply friction to the velocity
-    public void applyFriction() {
-        if (Math.abs(velocity.x) < min_friction) {
-            velocity.x = 0;
-        } else if (velocity.x > 0) {
-            velocity.x -= friction;
-        } else {
-            velocity.x += friction;
-        }
-    }
-
-    // Update the player movement
-    public void update() {
-        applyFriction();
-
-        // Update position based on velocity
-        position = position.add(velocity);
-
-        if (!GamePanel.Grounded) {
-            velocity.y += gravity;  // Apply gravity if not grounded
-        }
-
-        // Update collider position (adjust to camera view)
-        collider = updateCollider();
-        if(movingLeft && !movingRight) {
-        	moveLeft();
-        }
-        if(movingRight && !movingLeft) {
-        	moveRight();
-        }
-        
-    }
-
-    // Update the collider bounds based on the player's position
-    public Rectangle updateCollider() {
-        Rectangle c = new Rectangle((int) position.x, (int) position.y, size, size);
-        return c;
-        // Optionally, you can also update the collider as needed
-    }
-
-    // Handle player movement input
-    public void moveLeft() {
-        velocity.x -= xvel_increment;
-        if (velocity.x < -max_xvel) {
-            velocity.x = -max_xvel;
-        }
-    }
-
-    public void moveRight() {
-        velocity.x += xvel_increment;
-        if (velocity.x > max_xvel) {
-            velocity.x = max_xvel;
-        }
-    }
-
-    public void jump(boolean grounded) {
-        if (grounded) {
-            velocity.y = -15;  // Jump with an initial upward velocity
-        }
-    }
-
-    // Draw the player to the screen
-    public void draw(Graphics graphics) {
-        Graphics2D g = (Graphics2D) graphics;
-        g.setColor(Color.BLUE);
-        g.fillRect((int) (position.x - Player.camx), (int) (position.y - Player.camy), size, size);
-    }
+	
+	
+	
 }
