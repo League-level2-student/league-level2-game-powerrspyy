@@ -35,14 +35,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	public boolean xleft;
 	public boolean xright;
 	public boolean x_coll = false;
+	public volatile static boolean touchingGround = false;
+	public int frames = 1;
 	ArrayList<Platform> platforms = new ArrayList<>();
 	Thread updateLoop = new Thread(() -> {
 		while (true) {
 			Player.lastcamx = Player.camx;
 			Player.lastcamy = Player.camy;
-
+			touchingGround = RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x, player.y, (int) player.x - 1, (int) player.y + player.size + 1) || RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x + player.size, player.y, (int) player.x + player.size + 1, (int) player.y + player.size + 1) || RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x + player.size/2, player.y, (int) player.x + player.size/2, (int) player.y + player.size + 1);
 			check_collisions();
-//			System.out.println(Player.camx + " " + Player.camy);
 			if (Player.camy > 10000) {
 				restart();
 			}
@@ -51,12 +52,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	});
 
 	public GamePanel() {
-		platforms.add(new Platform(10, 10, 50, 50));
+		platforms.add(new Platform(120, 120, 100, 50));
 		platforms.add(new Platform(700, 700, 500, 300));
 		platforms.add(new Platform(1400, 600, 200, 20));
 		platforms.add(new Platform(1395, 400, 210, 20));
 		platforms.add(new Platform(1100, 300, 100, 20));
-		platforms.add(new Platform(650, 200, 100, 20));
+		platforms.add(new Platform(655, 200, 125, 20));
+		platforms.add(new Platform(0, -30, 100, 20));
+		platforms.add(new Platform(-5, -303, 110, 20));
+		platforms.add(new Platform(-7, -576, 124, 20));
 		
 		titleFont = new Font("Arial", Font.PLAIN, 48);
 		textFont = new Font("Arial", Font.PLAIN, 24);
@@ -70,6 +74,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	public void restart() {
 		Player.camy = 0;
 		Player.camx = 0;
+		Player.vy = 0;
+		Player.vx = 0;
 
 	}
 
@@ -194,8 +200,20 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 
 				Grounded = false;
-				Player.vy = -15;
+				if(touchingGround) {
+					Player.vy = -15;
+				}
+				
 
+		}
+		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+			if(touchingGround) {
+				player.sliding = true;
+				player.startTime = System.currentTimeMillis();
+			}
+					}
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			restart();
 		}
 
 	}
@@ -231,8 +249,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 //			restart();
 //		}
 		update();
-		repaint();
-	}
+		frames += 1;
+		if(frames == 2) {
+			repaint();
+			frames = 1;
+		}
+			}
 
 	public void update() {
 		for (Platform p : platforms) {

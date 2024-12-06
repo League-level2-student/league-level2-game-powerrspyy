@@ -17,7 +17,7 @@ public class Main {
 	JFrame frame;// = new JFrame();
 
 	public Main() {
-		frame = new JFrame("League Invaders");
+		frame = new JFrame("GlItCHeD");
 		System.out.println(width + " " + height); 
 
 		// frame.setTitle("")

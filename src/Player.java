@@ -12,6 +12,9 @@ public class Player {
 	int size = 50;
 	public boolean movingLeft;
 	public boolean movingRight;
+	public boolean sliding = false;
+	public boolean previous = true;
+	public long startTime; // Slide start time
 	Rectangle collider;
 	public static float vy = 0;	// Y velocity
 	public static float vx = 0;	// X velocity
@@ -46,17 +49,36 @@ public class Player {
 	}
 	public void update() {
 		friction();
+		if(sliding == false)
+		{
 		if (movingLeft == true) {
 			vx -= xvel_increment;
 			if(vx < -xvel_increment) {
 				vx = -xvel_increment;
 			}
+			previous = false; // this is false if the player last moved left and true if the player last moved right
 		}
 		if (movingRight == true) {
 			vx += xvel_increment;
 			if(vx > xvel_increment) {
 				vx = xvel_increment;
 			}
+			previous = true;
+		}
+		}else {
+			if(System.currentTimeMillis() - startTime >= 750) {
+				sliding = false;
+			}
+			if((movingLeft == true && previous == true) || (movingRight == true && previous == false)){
+				sliding = false;
+			}
+			if(previous) {
+				vx = xvel_increment * 2;
+			}
+			else {
+				vx = -xvel_increment * 2;
+			}
+			
 		}
 		lastcamx = camx;
 		lastcamy = camy;
