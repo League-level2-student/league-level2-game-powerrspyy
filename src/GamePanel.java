@@ -52,15 +52,31 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	});
 
 	public GamePanel() {
-		platforms.add(new Platform(120, 120, 100, 50));
-		platforms.add(new Platform(700, 700, 500, 300));
-		platforms.add(new Platform(1400, 600, 200, 20));
-		platforms.add(new Platform(1395, 400, 210, 20));
-		platforms.add(new Platform(1100, 300, 100, 20));
-		platforms.add(new Platform(655, 200, 125, 20));
-		platforms.add(new Platform(0, -30, 100, 20));
-		platforms.add(new Platform(-5, -303, 110, 20));
-		platforms.add(new Platform(-7, -576, 124, 20));
+		platforms.add(new Platform(120, 120, 100, 50, false, false, false));
+		platforms.add(new Platform(700, 700, 500, 300, false, false, false));
+		platforms.add(new Platform(1400, 600, 200, 20, false, false, false));
+		platforms.add(new Platform(1395, 400, 210, 20, false, false, false));
+		platforms.add(new Platform(1100, 300, 100, 20, false, false, false));
+		platforms.add(new Platform(655, 200, 125, 20, false, false, false));
+		platforms.add(new Platform(0, -30, 100, 20, false, false, false));
+		platforms.add(new Platform(-5, -303, 110, 20, false, false, false));
+		platforms.add(new Platform(-7, -576, 124, 20, false, false, false));
+		platforms.add(new Platform(-400, -600, 100, 20, false, true, false));
+		platforms.add(new Platform(-800, -600, 40, 20, false, true, false));
+		platforms.add(new Platform(-1250, -250, 70, 20, true, true, false));
+		platforms.add(new Platform(-1600, -800, 40, 20, false, true, false));
+		platforms.add(new Platform(-1900, -900, 40, 20, false, true, false));
+		platforms.add(new Platform(-1910, -1173, 60, 20, false, true, false));
+		platforms.add(new Platform(-1920, -1443, 80, 20, false, true, false));
+		platforms.add(new Platform(-2140, -1680, 60, 20, false, false, false));
+		platforms.add(new Platform(-2210, -1915, 60, 20, false, false, false));
+		platforms.add(new Platform(-1862, -1910, 60, 20, false, false, false));
+		platforms.add(new Platform(-800, -1873, 40, 20, false, false, false));
+		platforms.add(new Platform(-525, -1960, 90, 20, false, false, true));
+		platforms.add(new Platform(0, -2000, 90, 20, false, false, true));
+		platforms.add(new Platform(525, -2000, 40, 20, false, false, true));
+		platforms.add(new Platform(800, -2100, 90, 20, false, false, false, true));
+		
 		
 		titleFont = new Font("Arial", Font.PLAIN, 48);
 		textFont = new Font("Arial", Font.PLAIN, 24);
@@ -137,7 +153,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 					if(Grounded) {
 						grounded_check = true;
 					}else{
-					Player.vy = 0;
+						if(!p.slime) {
+							Player.vy = 0;
+						}else {
+							Player.vy = -Player.vy;
+							}
+					if(p.ice) {
+						player.fric = 0.2f;
+					}
+					if(p.victoryPlat) {
+						System.out.println("You WIN!");
+					}
+					else {player.fric = 0.5f;}
 					Player.camy = p.y - (player.y + player.size)+1;
 					Grounded = true;
 					grounded_check = true;}

@@ -22,7 +22,7 @@ public class Player {
 	final float max_xvel = 15.0f;
 	float xvel_increment = 5.0f;
 	final float min_f_cor = 0.3f; // Minimum friction value before it sets it to 0
-	float fric = 0.6f;
+	public float fric = 0.5f;
 
 	public Player(int xf, int yf) {
 		x = xf;
@@ -45,7 +45,7 @@ public class Player {
 	}
 	public void draw(Graphics graphics) {
 		Graphics2D g = (Graphics2D)graphics;
-		g.drawRect(Main.width / 2 - 25, Main.height / 2 - 25, size, size);
+		g.drawRect(Main.width / 2 - 23, Main.height / 2 - 23, size-4, size-4);
 	}
 	public void update() {
 		friction();
@@ -88,6 +88,9 @@ public class Player {
 //		y += vy;
 		if(!GamePanel.Grounded) {
 			vy += gravity;
+			if (vy > 40) {
+				vy = 40;
+			}
 
 		}
 //		if(vy>15) {

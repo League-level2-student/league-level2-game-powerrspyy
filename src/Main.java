@@ -18,7 +18,7 @@ public class Main {
 
 	public Main() {
 		frame = new JFrame("GlItCHeD");
-		System.out.println(width + " " + height); 
+//		System.out.println(width + " " + height); 
 
 		// frame.setTitle("")
 
