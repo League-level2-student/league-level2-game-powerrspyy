@@ -6,10 +6,12 @@ import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -37,14 +39,19 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	public boolean x_coll = false;
 	public volatile static boolean touchingGround = false;
 	public int frames = 1;
+	public boolean MainMenu = true;
+	public boolean canMove = true;
+	public long gameStartTime;
+	public int ClockTime;
 	ArrayList<Platform> platforms = new ArrayList<>();
 	Thread updateLoop = new Thread(() -> {
 		while (true) {
 			Player.lastcamx = Player.camx;
 			Player.lastcamy = Player.camy;
 			touchingGround = RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x, player.y, (int) player.x - 1, (int) player.y + player.size + 1) || RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x + player.size, player.y, (int) player.x + player.size + 1, (int) player.y + player.size + 1) || RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x + player.size/2, player.y, (int) player.x + player.size/2, (int) player.y + player.size + 1);
+			touchingGround = true;
 			check_collisions();
-			if (Player.camy > 10000) {
+			if (Player.camy > 1200) {
 				restart();
 			}
 
@@ -92,15 +99,17 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		Player.camx = 0;
 		Player.vy = 0;
 		Player.vx = 0;
+		canMove = true;
+		gameStartTime = System.currentTimeMillis();
 
 	}
 
 	public void draw(Graphics g) {
+		
 		player.draw(g);
 		for (Platform p : platforms) {
 			p.draw(g);
 		}
-
 	}
 
 	public void check_collisions() {
@@ -162,8 +171,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 						player.fric = 0.2f;
 					}
 					if(p.victoryPlat) {
-						System.out.println("You WIN!");
-					}
+						if(canMove) {
+							restart();
+							System.out.println("You WIN!");
+							canMove = false;
+						}
+											}
 					else {player.fric = 0.5f;}
 					Player.camy = p.y - (player.y + player.size)+1;
 					Grounded = true;
@@ -211,36 +224,68 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	@Override
 	public void paintComponent(Graphics g) {
 		draw(g);
+		g.setFont(titleFont);
+		g.drawString(Float.toString((float) ClockTime/100), 0, 50);
+		//Graphics2D graphics = (Graphics2D)g;
+		if (MainMenu) {
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, Main.width, Main.height);
+			g.setColor(Color.BLACK);
+			g.setFont(textFont);
+			g.drawString("W to jump, A to move left, D to move right, and S to boost in the direction you are facing!", (int) Main.width/2 - 465, (int) Main.height/2 - 120);
+			g.drawString("Press Enter to Start!", (int) Main.width/2 - 125, (int) Main.height/2 - 70);
+		}
+		if(!canMove) {
+			g.setColor(new Color(255,202,79));
+			g.fillRect(0, 0, Main.width, Main.height);
+			g.setColor(Color.BLACK);
+			g.setFont(textFont);
+			g.drawString("Press Enter to play again!", (int) Main.width/2 - 150, (int) Main.height/2 - 70);
+			g.setFont(titleFont);
+			g.drawString(Float.toString((float) ClockTime/100), 0, 50);
+		}
+
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 
 		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-			player.movingLeft = true;
-
+			if(canMove) {
+				player.movingLeft = true;
+			}
+			
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-			player.movingRight = true;
+			if(canMove) {
+				player.movingRight = true;
+			}
+			
 
 		}
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 
-				Grounded = false;
-				if(touchingGround) {
-					Player.vy = -15;
+				
+				if(canMove) {
+					Grounded = false;
+					if(touchingGround) {
+						Player.vy = -15;
+					}
 				}
 				
 
 		}
 		if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-			if(touchingGround) {
+			if(touchingGround && canMove) {
 				player.sliding = true;
 				player.startTime = System.currentTimeMillis();
 			}
 					}
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			restart();
+			if(MainMenu) {
+				MainMenu = false;
+			}
 		}
 
 	}
@@ -288,6 +333,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			p.update();
 		}
 		player.update();
-
+		if(canMove) {
+			ClockTime = (int) ((System.currentTimeMillis() - gameStartTime)/10f);
+		}
+		
 	}
 }
