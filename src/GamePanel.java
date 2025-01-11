@@ -49,7 +49,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			Player.lastcamx = Player.camx;
 			Player.lastcamy = Player.camy;
 			touchingGround = RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x, player.y, (int) player.x - 1, (int) player.y + player.size + 1) || RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x + player.size, player.y, (int) player.x + player.size + 1, (int) player.y + player.size + 1) || RaycastRectangleIntersection.doesRayIntersectAny(platforms, (int) player.x + player.size/2, player.y, (int) player.x + player.size/2, (int) player.y + player.size + 1);
-			touchingGround = true;
+//			touchingGround = true;
 			check_collisions();
 			if (Player.camy > 1200) {
 				restart();
